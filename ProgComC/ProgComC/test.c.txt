@@ -1,0 +1,182 @@
+.data
+__GLOBALS:
+#allocate 2
+__string767472684:
+83 84 82 73 78 78 78 71 83 0
+.text
+; private int Inc(int v)
+Inc3068682575:
+	; %retptr = r15
+	wr r15, r14, 1
+	; {
+	; return (v + 1)
+	rd r1, r14, 2
+	addi r1, r1, 1
+	wr r1, r14, 0
+	rd r1, r14, 1
+	jmpr r1
+	; }
+; private int (*superderp)(int) Derp(int (*derp)(int))
+Derp651124985:
+	; %retptr = r15
+	wr r15, r14, 1
+	; {
+	; return derp
+	rd r1, r14, 2
+	wr r1, r14, 0
+	rd r1, r14, 1
+	jmpr r1
+	; }
+; private int Derp(int (*blah)(int), int x)
+Derp2516885736:
+	; %retptr = r15
+	wr r15, r14, 1
+	; {
+	; return blah(x)
+	rd r1, r14, 3
+	rd r2, r14, 2
+	addi r14, r14, 4
+	wr r1, r14, 2
+	callr r2
+	rd r1, r14, 0
+	subi r14, r14, 4
+	wr r1, r14, 0
+	rd r1, r14, 1
+	jmpr r1
+	; }
+; public void main()
+#global main
+main:
+	; Global field initialization
+	; y = 5
+	movi r1, 5
+	movi r2, __GLOBALS
+	wr r1, r2, 0
+	; y = 5
+	movi r1, 5
+	movi r2, __GLOBALS
+	wr r1, r2, 0
+	; Finish global field initialization
+	; {
+	; int testnum
+	; testnum = 93000
+	movhi r1, 1
+	ori r1, r1, 27464
+	wr r1, r14, 1
+	; int merp
+	; merp = (Derp((&Inc))(2) % 2)
+	movi r1, 2
+	movi r2, Inc
+	addi r14, r14, 4
+	wr r2, r14, 2
+	call Derp651124985
+	rd r2, r14, 0
+	subi r14, r14, 4
+	addi r14, r14, 4
+	wr r1, r14, 2
+	callr r2
+	rd r1, r14, 0
+	subi r14, r14, 4
+	movi r2, 2
+	div r0, r1, r2
+	ax r1, r0
+	wr r1, r14, 2
+	; --merp
+	rd r1, r14, 2
+	subi r1, r1, 1
+	wr r1, r14, 2
+	; int* string
+	; string = "STRINNNGS"
+	movi r1, __string767472684
+	wr r1, r14, 3
+	; }
+	; return
+	halt
+; private int Inc(int v)
+Inc3068682575:
+	; %retptr = r15
+	wr r15, r14, 1
+	; {
+	; return (v + 1)
+	rd r1, r14, 2
+	addi r1, r1, 1
+	wr r1, r14, 0
+	rd r1, r14, 1
+	jmpr r1
+	; }
+; private int (*superderp)(int) Derp(int (*derp)(int))
+Derp651124985:
+	; %retptr = r15
+	wr r15, r14, 1
+	; {
+	; return derp
+	rd r1, r14, 2
+	wr r1, r14, 0
+	rd r1, r14, 1
+	jmpr r1
+	; }
+; private int Derp(int (*blah)(int), int x)
+Derp2516885736:
+	; %retptr = r15
+	wr r15, r14, 1
+	; {
+	; return blah(x)
+	rd r1, r14, 3
+	rd r2, r14, 2
+	addi r14, r14, 4
+	wr r1, r14, 2
+	callr r2
+	rd r1, r14, 0
+	subi r14, r14, 4
+	wr r1, r14, 0
+	rd r1, r14, 1
+	jmpr r1
+	; }
+; public void main()
+#global main
+main:
+	; Global field initialization
+	; y = 5
+	movi r1, 5
+	movi r2, __GLOBALS
+	wr r1, r2, 0
+	; y = 5
+	movi r1, 5
+	movi r2, __GLOBALS
+	wr r1, r2, 0
+	; Finish global field initialization
+	; {
+	; int testnum
+	; testnum = 93000
+	movhi r1, 1
+	ori r1, r1, 27464
+	wr r1, r14, 1
+	; int merp
+	; merp = (Derp((&Inc))(2) % 2)
+	movi r1, 2
+	movi r2, Inc
+	addi r14, r14, 4
+	wr r2, r14, 2
+	call Derp651124985
+	rd r2, r14, 0
+	subi r14, r14, 4
+	addi r14, r14, 4
+	wr r1, r14, 2
+	callr r2
+	rd r1, r14, 0
+	subi r14, r14, 4
+	movi r2, 2
+	div r0, r1, r2
+	ax r1, r0
+	wr r1, r14, 2
+	; --merp
+	rd r1, r14, 2
+	subi r1, r1, 1
+	wr r1, r14, 2
+	; int* string
+	; string = "STRINNNGS"
+	movi r1, __string767472684
+	wr r1, r14, 3
+	; }
+	; return
+	halt

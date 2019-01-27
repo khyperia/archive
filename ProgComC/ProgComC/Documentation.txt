@@ -1,0 +1,126 @@
+﻿Alright, this is a really informal documentation. Hopefully I remember to get everything, I'm just going through my sourcecode trying to get everything.
+
+API: Mostly everything is private, except the Compiler class, which exposes the Compile method. Provide the first filename and file IO functions, and you can compile anything.
+
+EXE: Run with a filename as an argument. This file will be compiled as the main file. If there is no input file specified, it will default to the file "program.c" in the current directory.
+	Flags:
+		Debug:
+			Syntax: /debug
+			Description: Runs the compilation without a try/catch around the compile statement, which will make the program crash upon a compiler error. This is useful if you have a debugger attached and want to examine locals/etc.
+
+Now, on to the language.
+Top-level constructs:
+	Preprocessor directives:
+		Include statement:
+			Syntax: #include filename
+			Description: Like a standard C-style include, except without the quotes or angle brackets
+		Asm Include statement:
+			Syntax: #asminclude filename
+			Description: Emits a ProgCom include directive into the emitted code. This enables you to do things like access native ProgCom labels/etc
+	Global field:
+		Syntax: [typename] [variablename];
+			[typename] [variablename] = [initial value];
+		Description: Creates a global field accessable from everywhere, initialized to a value, if supplied
+	Struct definition:
+		Syntax: struct [structname] { [typename] [variablename]; [typename] [variablename]; ... }
+		Description: Creates a struct, which is a collection of values grouped together into one variable.
+	Method definition:
+		Syntax: (public/private) [return type] [method name] ( [type] [param0], [type] [param1], ... ) { [method contents] }
+			(parameter can also be a function pointer type)
+		Description: Defines a method. This is the heart and soul of the language. If [method name] is "main", it is the entry point of the program, must be public, must return void, and cannot take parameters.
+	Extern method definition:
+		Syntax: (public/private) extern [return type] [method name] ( [type] [param0], ... ) ;
+		Description: Defines a method that is expected to be implemented elsewhere, allowing you to call it normally. This is usually done by a #asminclude directive.
+
+Method contents:
+	Block:
+		Syntax: { [statement] [statement] ... }
+		Description: Groups a collection of statements into one item
+		Note: Wherever "[statement]" is mentioned in a syntax, it can also be a block.
+	If statement:
+		Syntax: if ([condition]) [statement]
+			if ([condition]) [statement] else [statement]
+		Description: Runs the first block if [condition] != 0, otherwise runs the second statement.
+		Note: In emitted assembly, the else statement comes first, if both blocks are defined.
+	While statement:
+		Syntax: while ([condition]) [statement]
+		Descri... screw it, you know what a while statement is.
+		Note: Sorry, no for or do-while statements. Might be in a future version, though.
+	Return statement:
+		You know this one too. "return [value];"
+	Break/Continue statements:
+		Syntax: break;
+			continue;
+		Description: Either breaks or continues a while loop
+	Asm statement:
+		Syntax: asm { [ProgCom assembly code] }
+		Description: Emits completely unchecked assembly into the output, letter-for-letter. Be careful.
+		Note: if you wish to have a "}" literal in your asm code for whatever reason, simply type \} and it will compile to }
+	Variable declaration statement:
+		Syntax: [type] [variablename];
+			[type] [variablename] = [initialvalue];
+			[returntype] (*[variablename])([paramtype], [paramtype], ...);
+		Description: Declares a variable, and gives it a default value if supplied.
+		Note: The third syntax is for function pointers.
+	Any other expressions that are also valid statements (such as a function call by itself)
+
+Operators (listed by order of precedence, lowest to highest):
+	Assignment:
+		Assignment: [variable] = [value]
+	BitTwiddling:
+		And: [value] & [value]
+		Or: [value] | [value]
+		Xor: [value] ^ [value]
+	Equality:
+		Equals: [value] == [value]
+		NotEquals: [value] != [value]
+		LessThan: [value] < [value]
+		GreaterThan: [value] > [value]
+		LessThanOrEqual: [value] <= [value]
+		GreaterThanOrEqual: [value] >= [value]
+	Shift:
+		ShiftLeft: [value] << [shiftby]
+		ShiftRight: [value] >> [shiftby]
+	AddSub:
+		Add: [value] + [value]
+		Sub: [value] - [value]
+	MulDiv:
+		Mul: [value] * [value]
+		Div: [value] / [value]
+	Unary:
+		Cast: ([type])[value]
+		Dereference: *[value]
+		AddressOf: &[value]
+		Not: ![value]
+		Negation: -[value]
+	Primary:
+		MethodCall: [identifier]([value], [value], ...)
+		Dot: [value].[identifier]
+		DereferenceDot: [value]->[identifier]
+		Indexer: [value][[value]] (actually use square brackets, like arrayptr[value])
+
+Basic value types:
+	Integer:
+		Syntax: Nobody knows.
+	Boolean:
+		Syntax: true/false
+		Notes: true = 1, false = 0
+	Null:
+		Syntax: null
+		Notes: null = 0
+	Sizeof:
+		Syntax: sizeof([type])
+		Description: Returns the size, in ProgCom words (a 32 bit integer), of the type. NOT BYTES.
+	SpecialIdentifier:
+		Syntax: $[identifier]
+		Description: This command is very, very powerful, as it lets you access any label of anything. For example, to write to the ProgCom output page, do $GLOBAL_NUMPAD_OUT = 2
+		Notes: The label is not checked at all for validity or basic existance.
+	Identifier:
+		Syntax: [collection of letters/numbers/underscores not starting with a number]
+
+Misc notes:
+Weak typing galore. As long as the type size is the same, you can implicitly cast it.
+Bugs galore. Please report all bugs to khyperia, he really wants to know about them and will fix them asap.
+stdlib galore. There will be a stdlib.c included in a future release, including such functions like malloc. If you would like to start on these, that would be very, very nice of you.
+WIP galore. Many features of the C language are missing, such as #define statements. Submit a feature request to khyperia and be patient.
+Galore galore. Khyperia likes using the word galore in the misc notes section. Also, he likes being meta and talking in the third person.

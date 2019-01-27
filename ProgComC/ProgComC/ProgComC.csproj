@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CB7AE35D-E2A9-47F1-9485-BC4FC77006FB}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProgComC</RootNamespace>
+    <AssemblyName>ProgComC</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Expressions\BasicValue\FloatLiteral.cs" />
+    <Compile Include="Expressions\BasicValue\StringLiteral.cs" />
+    <Compile Include="Expressions\IValueVisitor.cs" />
+    <Compile Include="Expressions\Operation\BitwiseInversionOperation.cs" />
+    <Compile Include="Expressions\Operation\ModOperation.cs" />
+    <Compile Include="Expressions\Operation\PostDecOperation.cs" />
+    <Compile Include="Expressions\Operation\PostIncOperation.cs" />
+    <Compile Include="Expressions\Operation\PreDecOperation.cs" />
+    <Compile Include="Expressions\Operation\PreIncOperation.cs" />
+    <Compile Include="HighLevelContent\AsmInclude.cs" />
+    <Compile Include="Expressions\Operation\AddOperation.cs" />
+    <Compile Include="Expressions\Operation\AddressOfOperation.cs" />
+    <Compile Include="Expressions\Operation\AndOperation.cs" />
+    <Compile Include="Expressions\Operation\AssignmentOperation.cs" />
+    <Compile Include="HighLevelContent\IHighLevelContent.cs" />
+    <Compile Include="Parser\AstNodeHelper.cs" />
+    <Compile Include="ProgComBackend\ProgComAssignableVisitor.cs" />
+    <Compile Include="ProgComBackend\ProgComBackendHelper.cs" />
+    <Compile Include="ProgComBackend\ProgComHighLevelContentVisitor.cs" />
+    <Compile Include="ProgComBackend\ProgComLineVisitor.cs" />
+    <Compile Include="ProgComBackend\ProgComValueVisitor.cs" />
+    <Compile Include="Statement\ForStatement.cs" />
+    <Compile Include="Statement\IAssignableVisitor.cs" />
+    <Compile Include="Statement\ILineVisitor.cs" />
+    <Compile Include="TypeIdentifier\ArrayTypeIdentifier.cs" />
+    <Compile Include="TypeIdentifier\CustomTypeIdentifier.cs" />
+    <Compile Include="Expressions\BasicValue\BasicValue.cs" />
+    <Compile Include="Expressions\Operation\BinaryOperation.cs" />
+    <Compile Include="Statement\Block.cs" />
+    <Compile Include="Expressions\BasicValue\BooleanLiteral.cs" />
+    <Compile Include="Statement\BreakStatement.cs" />
+    <Compile Include="Expressions\Operation\CastOperation.cs" />
+    <Compile Include="Parser\CharStream.cs" />
+    <Compile Include="Expressions\Operation\ComparisionOperation.cs" />
+    <Compile Include="HighLevelContent\Compiler.cs" />
+    <Compile Include="HighLevelContent\CompilerContext.cs" />
+    <Compile Include="Statement\ContinueStatement.cs" />
+    <Compile Include="Expressions\Operation\DereferenceOperation.cs" />
+    <Compile Include="Expressions\Operation\DivOperation.cs" />
+    <Compile Include="Expressions\Operation\DotOperation.cs" />
+    <Compile Include="Expressions\Operation\EqualityOperation.cs" />
+    <Compile Include="Expressions\Operation\IndexerOperation.cs" />
+    <Compile Include="Expressions\Operation\NegationOperation.cs" />
+    <Compile Include="Expressions\BasicValue\Parenthases.cs" />
+    <Compile Include="Expressions\BasicValue\SizeofOperator.cs" />
+    <Compile Include="TypeIdentifier\FunctionPointerType.cs" />
+    <Compile Include="HighLevelContent\GlobalField.cs" />
+    <Compile Include="Expressions\Operation\GreaterThanOperation.cs" />
+    <Compile Include="Expressions\Operation\GreaterThanOrEqualOperation.cs" />
+    <Compile Include="HighLevelContent\HighLevelContents.cs" />
+    <Compile Include="Statement\IAssignable.cs" />
+    <Compile Include="Parser\IAstNode.cs" />
+    <Compile Include="Expressions\BasicValue\Identifier.cs" />
+    <Compile Include="Statement\IfStatement.cs" />
+    <Compile Include="Statement\ILine.cs" />
+    <Compile Include="Expressions\Operation\InequalityOperation.cs" />
+    <Compile Include="Expressions\BasicValue\IntegerLiteral.cs" />
+    <Compile Include="Statement\InlineAsmStatement.cs" />
+    <Compile Include="TypeIdentifier\IntTypeIdentifier.cs" />
+    <Compile Include="TypeIdentifier\ITypeIdentifier.cs" />
+    <Compile Include="Expressions\IValue.cs" />
+    <Compile Include="Expressions\Operation\LessThanOperation.cs" />
+    <Compile Include="Expressions\Operation\LessThanOrEqualOperation.cs" />
+    <Compile Include="Statement\Line.cs" />
+    <Compile Include="HighLevelContent\Method.cs" />
+    <Compile Include="Expressions\Operation\MethodCall.cs" />
+    <Compile Include="HighLevelContent\MethodEmitContext.cs" />
+    <Compile Include="Expressions\Operation\MulOperation.cs" />
+    <Compile Include="Expressions\Operation\NotOperation.cs" />
+    <Compile Include="Expressions\BasicValue\NullLiteral.cs" />
+    <Compile Include="Expressions\Operation\Operators.cs" />
+    <Compile Include="Expressions\Operation\OrOperation.cs" />
+    <Compile Include="TypeIdentifier\PointerTypeIdentifier.cs" />
+    <Compile Include="HighLevelContent\Preprocessor.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProgComBackend\Register.cs" />
+    <Compile Include="Statement\ReturnStatement.cs" />
+    <Compile Include="Expressions\Operation\ShiftLeftOperation.cs" />
+    <Compile Include="Expressions\Operation\ShiftRightOperation.cs" />
+    <Compile Include="Expressions\BasicValue\SpecialIdentifier.cs" />
+    <Compile Include="HighLevelContent\StructDefinition.cs" />
+    <Compile Include="Expressions\Operation\SubOperation.cs" />
+    <Compile Include="TypeIdentifier\TypeIdentifier.cs" />
+    <Compile Include="Statement\VariableDeclarationStatement.cs" />
+    <Compile Include="Statement\VoidStatement.cs" />
+    <Compile Include="TypeIdentifier\VoidTypeIdentifier.cs" />
+    <Compile Include="Statement\WhileStatement.cs" />
+    <Compile Include="Expressions\Operation\XorOperation.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Documentation.txt" />
+    <Content Include="test.c">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
