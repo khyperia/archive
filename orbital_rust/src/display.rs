@@ -5,8 +5,8 @@ use sdl2::pixels::PixelFormatEnum;
 use std::error::Error;
 
 pub fn display<F: FnMut(usize, usize, &mut [u8])>(mut render: F) -> Result<(), Box<Error>> {
-    let scale = 4;
-    let mut width = 1 << 9;
+    let scale = 1;
+    let mut width = 1 << 10;
     let mut height = width;
     let sdl = init()?;
     let video = sdl.video()?;

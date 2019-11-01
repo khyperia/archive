@@ -1,4 +1,4 @@
-use rand::{thread_rng, Rng, prelude::ThreadRng};
+use rand::{prelude::ThreadRng, thread_rng, Rng};
 use rk4;
 use std::ops::Add;
 use std::ops::Mul;
@@ -6,7 +6,7 @@ use std::ops::Sub;
 
 pub type F = f32;
 
-const COLOR_VARIANCE: F = 1.4;
+const COLOR_VARIANCE: F = 1.2;
 const SATURATION: F = 0.5;
 const G: F = 1.0;
 const SUN_MASS: F = 100.0;
@@ -37,6 +37,10 @@ impl Vector {
 
     fn normalized(self) -> Self {
         self * (1.0 / self.len())
+    }
+
+    fn dot(self, other: Vector) -> F {
+        self.x * other.x + self.y * other.y
     }
 }
 
@@ -129,20 +133,31 @@ impl Universe {
             rk4::rk4_world(self, 0.1 / time as F);
         }
 
-        let com = self.com();
-        for star in &mut self.stars {
-            star.pos = star.pos - com;
-        }
-
-        let cov = self.cov();
-        for star in &mut self.stars {
-            star.vel = star.vel - cov;
-        }
-
-        let positions = self.stars
+        let positions = self
+            .stars
             .iter()
             .map(|x| (x.pos, x.mass))
             .collect::<Vec<_>>();
+
+        for (i, s) in self.stars.iter_mut().enumerate() {
+            let retain_bounce = RETAIN_LIMIT * 0.95;
+            if s.pos.len() > retain_bounce * 0.95 {
+                //let accel = Self::calc_accel_one(
+                //    positions.iter().map(|&(pos, mass)| VecMass::new(pos, mass)),
+                //    s.pos,
+                //    i,
+                //);
+                //let normal = accel.normalized() * -1.0;
+                let normal = s.pos.normalized();
+                let dot = s.vel.dot(normal);
+                if dot > 0.0 {
+                    s.vel = s.vel * 0.9 - normal * (1.3 * dot);
+                    //s.pos = normal * retain_bounce;
+                    println!("boing {:05} {:05}", s.pos.len(), dot);
+                }
+            }
+        }
+
         self.stars.retain(|star| {
             star.pos.len2() < RETAIN_LIMIT * RETAIN_LIMIT && {
                 let dist = positions
@@ -162,6 +177,16 @@ impl Universe {
             let new_star = self.gen_star();
             self.stars.push(new_star);
         }
+
+        let com = self.com();
+        for star in &mut self.stars {
+            star.pos = star.pos - com;
+        }
+
+        let cov = self.cov();
+        for star in &mut self.stars {
+            star.vel = star.vel - cov;
+        }
     }
 
     fn com(&self) -> Vector {
@@ -176,19 +201,23 @@ impl Universe {
 
     fn cov(&self) -> Vector {
         let mut cov = Vector::new(0.0, 0.0);
+        let mut total_mass = 0.0;
         for star in &self.stars {
-            cov = cov + star.vel;
+            cov = cov + star.vel * star.mass;
+            total_mass += star.mass;
         }
-        cov * (1.0 / self.stars.len() as F)
+        cov * (1.0 / total_mass)
     }
 
     pub fn gen_star(&mut self) -> Star {
         let pos = Vector::new(self.rng.gen::<F>() - 0.5, self.rng.gen::<F>() - 0.5) * 2.0 * POS_GEN;
-        let accel = Self::calc_accel_one(
-            self.stars.iter().map(|x| VecMass::new(x.pos, x.mass)),
-            pos,
-            usize::max_value(),
-        );
+        // let accel = Self::calc_accel_one(
+        //     self.stars.iter().map(|x| VecMass::new(x.pos, x.mass)),
+        //     pos,
+        //     usize::max_value(),
+        // );
+        let dir = self.stars[0].pos - pos;
+        let accel = dir.normalized() * (G * self.stars[0].mass / dir.len2());
         // a = v * v / r
         // v = sqrt(r * a)
         let speed = ((self.com() - pos).len() * accel.len()).sqrt();
@@ -251,18 +280,22 @@ impl Universe {
             *x = x.saturating_sub(1);
             //if *x > 0 { *x -= 1; }
         }
-        const RENDER_RADIUS: usize = 5;
+        const RENDER_RADIUS: usize = 8;
         for (i, star) in self.stars.iter().enumerate() {
+            // https://en.wikipedia.org/wiki/Two-body_problem#Energy_of_the_two-body_system
             let mut energy = 0.0;
             for (j, other) in self.stars.iter().enumerate() {
                 if i != j {
-                    let grav_energy = G * other.mass / (other.pos - star.pos).len();
-                    energy += grav_energy;
+                    let potential_energy =
+                        G * star.mass * other.mass / (other.pos - star.pos).len();
+                    let mu = star.mass * other.mass / (star.mass + other.mass);
+                    let grav_energy = mu / star.mass * potential_energy;
+                    energy -= grav_energy;
                 }
             }
             let kine_energy = star.mass * star.vel.len2() / 2.0;
             energy += kine_energy;
-            let hue = energy.abs().log(COLOR_VARIANCE).sin() * 0.5 + 0.5;
+            let hue = (-energy).max(0.0000001).log(COLOR_VARIANCE).sin() * 0.5 + 0.5;
             let screen_pos = (star.pos * (1.0 / (2.0 * SCREEN_SIZE)) + Vector::new(0.5, 0.5))
                 * ((width + height) as F / 2.0);
             for y in (screen_pos.y as usize).saturating_sub(RENDER_RADIUS)
@@ -272,7 +305,9 @@ impl Universe {
                     ..(screen_pos.x as usize + RENDER_RADIUS).min(width - 1)
                 {
                     let pos = (Vector::new(x as F, y as F) * (2.0 / (width + height) as F)
-                        - Vector::new(0.5, 0.5)) * 2.0 * SCREEN_SIZE;
+                        - Vector::new(0.5, 0.5))
+                        * 2.0
+                        * SCREEN_SIZE;
                     let dist = star.pos - pos;
                     let bright = star.vel.len().sqrt();
                     let add = (-dist.len2() * 10.0).exp();
